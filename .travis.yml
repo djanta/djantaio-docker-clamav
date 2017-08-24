@@ -1,40 +1,33 @@
 language: bash
-
-services: docker
-
+services:
+  - docker
 branches:
   except:
-    - /^pr\..*/
-    - /^features\..*/
+  - /^pr\..*/
+  - /^features\..*/
   only:
-      - master
-      - develop
-
+  - master
+  - develop
 before_install:
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-engine
-
   - docker build -t djantaio/djantaio-docker-clamav .
   - docker ps -a
-
 after_script:
   - docker images
-
-after_success:
-  if [ "$TRAVIS_BRANCH" == "master" ]; then
-      echo "...success..."
-      #docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-      #docker push USER/REPO;
-  fi
-
 notifications:
   slack:
-    secure: LFNWwOhrauoI8phLvFkKnAFkXEfIKxgzSVvONtqYX8fkECikQLGkWMe2K8VaCKgW7KdDJgKvhr/I3wkd5G29iOAExb/1lOqyqLJ35VDg7BJzYNNmbDKZ/VkFkWbKpHF2az80RZQRssJcyB4X9HqLcOlg+3BRss92Ojj52UQCPQs/pixdoI4eLxB6FdSfT+/D3PDLktTt1fnDi7R0DORyRVxg3IGdEslDo6ccHrjxA40KNbJhC6XKjP1Rt3qCPgGf+/gnPnQiCex5IAVoqiA4TjQU4du6rpzmKE5qtDyuCyETOWA0pG2oUgSmVt6A6yg0pGGpZFyACSLvvh869qg6s27QyRDS8zjbGsRD1Z7ks32wNfAVwkOGnLUrzODipWtHsdS3SczrBCHFelo+aV2hSvkLGUX/k+ZPpbOpruLtPznh4UEZcF8hYhnaMEdO7VMXSYwSaD08Grcf/uvF3apKQknKA3YbPYfSRZdexG8s4jaHnAx/tMkMXyxSBAAnMGG99y7ACdQ+BSTHPMUqSCtxS6Daw90Zt1TJxYsYRtTXx4GaYZJgFELFPfw9GTsot1U9tsvuG5UBC9jwkSm4pltTz2Ag1p0koYgb5j4WZKlvEqWRE6O2fmswo0lVKVzYNnjom4x09TN0J55JRZgIGDQGEYVl+Yfw+TUv5fWU45GMHsI=
+    #secure: SdmTj1RvEAoHLuPfQExMROZtPyawFEeNtGrUK0hS5DG9ksl9QcIo6x33+w26ZVlQH2Qcojo4yzwUvwnMiUwFUNE/69vPP+nR3uWHvEw/D1R3eQBi5n61j+MThHgTyJI/Fydhw3B/fHk1Oh02X1D8XoscbzfnjeBAUz95l4qlKnykb9yDXYhNAS69lOZCl5PWh+Y2IFU7Xy7hL0ZVU5TvGSiE5ljX6OWVtagimG2j9levNNTi29XeDIuPm2wmMr+MglYGsTbzTZ6cA9QQVKKm2DK+ZKJ0I4TyAeNiHEsvxSz9LOuiiZ2yK94MvERS7cWgvIN9wBuU+/3tN4u7YVeWJeI4vFGIprDevx4b2/bZsva1iDBbLgAXEkX/E6/nRryoKT+swUkJ89okzntyC6NKr/lkrCCFpIhbSFdOKQwtXGEz8VJfEOsWu3s6rkL34w11I2EV46Jh+lcmyq6hbnV1kfKu88RbpGPQZXK55ffVPRDObgnjctq7hl8WmCj4yZjaHsSEPsN+UmpPqgMw4BqbzTLDw6H/sPCvq7TXWrEr90NtUPkqevDsWdJ/1rwaZ1WQgIsL7j7BWhDVEGMv3H4j4g+fwqPIjHW8Lr6yJNqVbSSLPKb6UJOm/QtIcT3h59VD6VBF+GzQDGacmdr2aGGdb+Ne4lSWxO5jacEuReGfAlE=
     rooms:
-      - djantaio:1GeeSv1noSekK9to1yTqsbDw#docker
       - djantaio:1GeeSv1noSekK9to1yTqsbDw#general
+      - djantaio:1GeeSv1noSekK9to1yTqsbDw#docker
     on_success: always # default: always
     on_failure: always # default: always
-    on_pull_requests: false
     template:
       - "Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch} by %{author} %{result} in %{duration}"
+  webhooks:
+    urls:
+    - https://webhooks.gitter.im/e/527ecb157afe8c3f6eb9
+    on_success: change
+    on_failure: always
+    on_start: never

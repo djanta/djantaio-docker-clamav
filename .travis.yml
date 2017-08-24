@@ -1,6 +1,7 @@
+dist: precise
 language: bash
 services:
-  - docker
+- docker
 branches:
   except:
   - /^pr\..*/
@@ -9,24 +10,27 @@ branches:
   - master
   - develop
 before_install:
-  - sudo apt-get update
-  - docker build -t djantaio/djantaio-docker-clamav .
-  - docker ps -a
+- sudo apt-get update
+- docker build -t djantaio/djantaio-docker-clamav .
+- docker ps -a
 after_script:
-  - docker images
+- docker images
 notifications:
   slack:
-    #secure: SdmTj1RvEAoHLuPfQExMROZtPyawFEeNtGrUK0hS5DG9ksl9QcIo6x33+w26ZVlQH2Qcojo4yzwUvwnMiUwFUNE/69vPP+nR3uWHvEw/D1R3eQBi5n61j+MThHgTyJI/Fydhw3B/fHk1Oh02X1D8XoscbzfnjeBAUz95l4qlKnykb9yDXYhNAS69lOZCl5PWh+Y2IFU7Xy7hL0ZVU5TvGSiE5ljX6OWVtagimG2j9levNNTi29XeDIuPm2wmMr+MglYGsTbzTZ6cA9QQVKKm2DK+ZKJ0I4TyAeNiHEsvxSz9LOuiiZ2yK94MvERS7cWgvIN9wBuU+/3tN4u7YVeWJeI4vFGIprDevx4b2/bZsva1iDBbLgAXEkX/E6/nRryoKT+swUkJ89okzntyC6NKr/lkrCCFpIhbSFdOKQwtXGEz8VJfEOsWu3s6rkL34w11I2EV46Jh+lcmyq6hbnV1kfKu88RbpGPQZXK55ffVPRDObgnjctq7hl8WmCj4yZjaHsSEPsN+UmpPqgMw4BqbzTLDw6H/sPCvq7TXWrEr90NtUPkqevDsWdJ/1rwaZ1WQgIsL7j7BWhDVEGMv3H4j4g+fwqPIjHW8Lr6yJNqVbSSLPKb6UJOm/QtIcT3h59VD6VBF+GzQDGacmdr2aGGdb+Ne4lSWxO5jacEuReGfAlE=
     rooms:
-      - djantaio:1GeeSv1noSekK9to1yTqsbDw#general
-      - djantaio:1GeeSv1noSekK9to1yTqsbDw#docker
-    on_success: always # default: always
-    on_failure: always # default: always
+    - djantaio:1GeeSv1noSekK9to1yTqsbDw#general
+    - djantaio:1GeeSv1noSekK9to1yTqsbDw#docker
+    on_success: always
+    on_failure: always
     template:
-      - "Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch} by %{author} %{result} in %{duration}"
+    - Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch}
+      by %{author} %{result} in %{duration}
   webhooks:
     urls:
     - https://webhooks.gitter.im/e/527ecb157afe8c3f6eb9
     on_success: change
     on_failure: always
     on_start: never
+env:
+  global:
+    secure: Xmqq/sklExg3MtBKfbOflFl80aw685TxGzR7sbe6kHtrDB4gSp+CqsHpWmyWHle5vIl0ZimYgM81l7PVbmyED/at+tow3lpgs2+EVICxbtc2RlF8IADx1+Bahrk5gkdyevP/erOXCHH63DytAfMgNiKkZUuocO2v7RXB9mDnQFdLTMngOYddKxyMJ/8gMe1fSpU0CgUtSlrWGOuhNUI0rUw4GdP9GnvHlsFaocpOaB4GVmcHxHtVLj/Ld7irVPShWO4QTaoeL4mEAlcxyjCv2jQxbuySBEEdxFJ77ZbgRVaZeYwu//WqMNe7yLN2FX6eIGrgLl68pxmKBtlPwu1i/1dKmReeBK15KdXAcvOJcCGvmNRaGaBRMXk1gTi7ja1cboGVSpV4mz4VvCWBnOUTXijlfF/kD5Ncyb/D7B+M/E6ufM+HiD1jUrdm/+1lcSLx+3bEn5wgwtc4ap/US4tkYI90SgSDLmcgw6McKPR58Ol7dTF0jZ2iD38c6yYADB/u6jvNhJOrwX6Y5gJ8G+/62FlTVYACFJdbTbu1SyMUJ2WZIoUAyQPvjdTkre+M66psU76pNeEm3/+Uj6UD8kv0cKOrKNbeJiIK1wQqSySWCSWLU/6dUtbaY4+Wzv5KS1hNp0J6hVZXHyZ9czxpd+1ve0y58ztkJ5L4siSQkKtRrTo=

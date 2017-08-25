@@ -1,33 +1,34 @@
 dist: precise
 language: bash
 services:
-- docker
+  - docker
 branches:
   except:
-  - /^pr\..*/
-  - /^features\..*/
+    - /^pr\..*/
+    - /^features\..*/
   only:
-  - master
-  - develop
+    - master
+    - develop
 before_install:
-- sudo apt-get update
-- docker build -t djantaio/djantaio-docker-clamav .
-- docker ps -a
+  - sudo apt-get update
+  - docker build -t djantaio/djantaio-docker-clamav .
+  - docker ps -a
 after_script:
-- docker images
+  - docker images
 notifications:
+  email: false
   slack:
     rooms:
-    - djantaio:1GeeSv1noSekK9to1yTqsbDw#general
-    - djantaio:1GeeSv1noSekK9to1yTqsbDw#docker
+      - djantaio:1GeeSv1noSekK9to1yTqsbDw#general
+      - djantaio:1GeeSv1noSekK9to1yTqsbDw#docker
     on_success: always
     on_failure: always
     template:
-    - Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch}
-      by %{author} %{result} in %{duration}
+      - Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch}
+        by %{author} %{result} in %{duration}
   webhooks:
     urls:
-    - https://webhooks.gitter.im/e/527ecb157afe8c3f6eb9
+      - https://webhooks.gitter.im/e/527ecb157afe8c3f6eb9
     on_success: change
     on_failure: always
     on_start: never

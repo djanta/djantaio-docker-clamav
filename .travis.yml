@@ -1,8 +1,10 @@
 sudo: required
 language: bash
 dist: trusty
+
 services:
   - docker
+
 branches:
   except:
     - /^pr\..*/
@@ -10,41 +12,58 @@ branches:
   only:
     - master
     - develop
-cache:
-  directories:
-    - $HOME/.djantaio/
+
+# before install any component
 before_install:
-  - sudo apt-get update
-  - docker build -t djantaio/djantaio-docker-clamav .
-  - docker images -a
-  - docker ps -a
+  # Parameters used during release
+  - git config user.name "$GH_USER"
+  - git config user.email "$GH_USER_EMAIL"
+
+  # setup https authentication credentials, used by ./mvnw release:prepare
+  - git config credential.helper "store --file=.git/credentials"
+  - echo "https://$GH_TOKEN:@github.com" > .git/credentials
+
+before_script:
+  - env | sort
+  - IMAGE_NAME=clamav-server
+  - IMAGE_BASE="${ACCOUNT_ID:-djantaio}/${IMAGE_NAME}"
+  - IMAGE_TAG="${IMAGE_BASE}"
+  - IMAGE_BRANCH="${IMAGE_BASE}:${TRAVIS_BRANCH}"
+
+  # Making sure we login ...
+  - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
+
 after_script:
   - docker images
+  - docker ps -a
+
+before_deploy:
+ - docker tag "$IMAGE_TAG" "$IMAGE_BRANCH"
+
 after_success:
   # Only continue for 'develop' or 'release/*' branches
   - if [ "$TRAVIS_BRANCH" =~ "^(develop$|feature//*)" ]; then
-      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-      docker push djantaio/djantaio-docker-clamav:"$TRAVIS_BRANCH";
+    docker --debug build -t "$IMAGE_TAG" .
+    docker push "${IMAGE_BRANCH}";
     fi
-notifications:
-  email: false
-  slack:
-    rooms:
-    - djantaio:1GeeSv1noSekK9to1yTqsbDw#general
-    - djantaio:1GeeSv1noSekK9to1yTqsbDw#docker
-    on_success: always
-    on_failure: always
-    template:
-    - Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch}
-      by %{author} %{result} in %{duration}
-  webhooks:
-    urls:
-    - https://webhooks.gitter.im/e/527ecb157afe8c3f6eb9
-    on_success: change
-    on_failure: always
-    on_start: never
-env:
-  global:
-  - secure: Xmqq/sklExg3MtBKfbOflFl80aw685TxGzR7sbe6kHtrDB4gSp+CqsHpWmyWHle5vIl0ZimYgM81l7PVbmyED/at+tow3lpgs2+EVICxbtc2RlF8IADx1+Bahrk5gkdyevP/erOXCHH63DytAfMgNiKkZUuocO2v7RXB9mDnQFdLTMngOYddKxyMJ/8gMe1fSpU0CgUtSlrWGOuhNUI0rUw4GdP9GnvHlsFaocpOaB4GVmcHxHtVLj/Ld7irVPShWO4QTaoeL4mEAlcxyjCv2jQxbuySBEEdxFJ77ZbgRVaZeYwu//WqMNe7yLN2FX6eIGrgLl68pxmKBtlPwu1i/1dKmReeBK15KdXAcvOJcCGvmNRaGaBRMXk1gTi7ja1cboGVSpV4mz4VvCWBnOUTXijlfF/kD5Ncyb/D7B+M/E6ufM+HiD1jUrdm/+1lcSLx+3bEn5wgwtc4ap/US4tkYI90SgSDLmcgw6McKPR58Ol7dTF0jZ2iD38c6yYADB/u6jvNhJOrwX6Y5gJ8G+/62FlTVYACFJdbTbu1SyMUJ2WZIoUAyQPvjdTkre+M66psU76pNeEm3/+Uj6UD8kv0cKOrKNbeJiIK1wQqSySWCSWLU/6dUtbaY4+Wzv5KS1hNp0J6hVZXHyZ9czxpd+1ve0y58ztkJ5L4siSQkKtRrTo=
-  - secure: tSRV8iTjXPkEZWM2zQ60TJUXwAD8u9cNsvWOrhVwZIhv1F2zP9DME9TIMoSO2h+/MdcEUbVzO0yphgzkyt/T5JxN0cqDmDjYdcp22GGraP8Yyvqwb7o+sfdwJe7xV/rpoS+Y2dzUp6wyDE26k1KTs3H5wWz3I2j6o0xg6XKHcz8bq08DgSOLCx8CBcsWZptJBpKwSb7l5+DPln/iRXllBURj3/JoxYKVg39K+bFFwBDyEse54jqRvQEJvL1DbXm7/gKB1k7l8JvVBmQAfyJZSpBADFCE8yvlvusO/lRj32zm7oiv8KLy3lEHPsi4VpnPms+aTBiKuaxcPZ8RXUn5d971xxAlfKc7N0HpMQ7fjbAxnfJ2RTj9WZKo/mXEe7g8pfF0xHlAS95NTjJpR29xefDgkcqdMFchWRiDWgTSEj9UISJAaNgPBApgAMqymfgoL/xzdXrd46UU0yWLR+qsnUBGYpiIGZA/fpIF1ioM9I01Pr1v5lqSQx8wTgrnBTQW/avNNtDiAP9AXmrkBp/vJlX/RXhEHY772nn4WIogxt8Q5YwFJA97CQt0DWaLePgKd1g9e/qz2jS5AVtoK60JTgQZSb6xppAjrC2IqPtqjAXB7BR3RWlDtHvuafIsHQO3kR+TYshLCGujexra9aw5cdeyD5U6mmuBSc3YY5tsuBQ=
-  - secure: H7znevJLjMatedhfJhv9211rFrgypW18LzE7ptoFo/z50qHRAmtSEeJNrgAGJdet8NtS2Id0Wlt9UkW9fWVbgAW+7ha6w70QYnfV1uqMUTwheHfelApsAblE2ABL8jj1UE8hn6F7XptL8zZ13q2xZo4sWhKnlclnqQS4y6XFKZZKWC+cAqZjsbfSPOWmFsAWYwHZRqlB80W9mx061K1GD/1zV5Sqr7ZzmyPPmFh2UK4hHHAjmg/rkj0NGIVtzfg/mf4a1yeVmgQUbYghzu2eV2xrObNUWQHbxCFXzMVcxR4IcVSMwVyu8MXQxVaV7zGV7TWSDvd25d7bnw812wo188bpsh0fsgGYxCLceTbpBn/CGv3PUobXRM+qonskFIFNYaBepj4KFMfVW45FdEAu58aleGPBw8jb6L9PHe2heTj7sJODDxUTs06D2aOzTqvyAddvTTFfybTLPInbXA6H76PhyPZyGFzyroZibCtdv8ycICESGYlAWP7YzFNcrVWdmIguf+SmuZg4ItEU7ejQBSgRJPq7qBKsyOZSfslbL+mgjHKNQ0659yy/pX36sHizO+1+UZLc7P+E7nNvkxo+v1ypbxIy7tisSN5pJSprDEk+38WMJgElqcq7duhP9Fx5XCSSHcHhHCFrb6A8r+PX4iQ4j8D5Jlm8EUfEo3yDGNA=
+
+deploy:
+  provider: script
+  script: docker push "$IMAGE_BRANCH"
+#  on:
+#    branch: develop
+
+#notifications:
+#  email: false
+#  slack:
+#    rooms:
+#    on_success: always
+#    on_failure: always
+#    template:
+#    - Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch}
+#      by %{author} %{result} in %{duration}
+#  webhooks:
+#    urls:
+#    on_success: change
+#    on_failure: always
+#    on_start: never

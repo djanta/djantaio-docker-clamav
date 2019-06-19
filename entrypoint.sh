@@ -16,11 +16,10 @@
 # GNU General Public License at <http://www.gnu.org/licenses/> for
 # more details.
 
-# Usage: ./clamav-entrypoint.sh [-h|--help]
+# Usage: ./entrypoint.sh [-h|--help]
 
 # Revision history:
 # ---------------------------------------------------------------------------
-
 
 # bootstrap clam av service and clam av database updater shell script
 
@@ -37,17 +36,16 @@ pidlist=`jobs -p`
 latest_exit=0
 
 # define shutdown helper
-function shutdown() {
-    trap "" SIGINT
+function shutdown () {
+  trap "" SIGINT
 
-    for single in $pidlist; do
-        if ! kill -0 $pidlist 2>/dev/null; then
-            wait $pidlist
-            exitcode=$?
-        fi
-    done
-
-    kill $pidlist 2>/dev/null
+  for single in $pidlist; do
+    if ! kill -0 $pidlist 2>/dev/null; then
+      wait $pidlist
+      exitcode=$?
+    fi
+  done
+  kill $pidlist 2>/dev/null
 }
 
 # run shutdown

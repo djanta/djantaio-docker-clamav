@@ -5,13 +5,17 @@ dist: trusty
 services:
   - docker
 
+# Don't build release tags. This avoids publish conflicts because the version commit exists both on master and the release tag.
+# See https://github.com/travis-ci/travis-ci/issues/1532
 branches:
   except:
-    - /^pr\..*/
-    - /^features\..*/
+  - /^[0-9]/
+
+  # safelist
   only:
-    - master
-    - develop
+  - master
+  - develop
+  - release
 
 # before install any component
 before_install:
@@ -37,21 +41,51 @@ after_script:
   - docker images
   - docker ps -a
 
-before_deploy:
- - docker tag "$IMAGE_TAG" "$IMAGE_BRANCH"
+# Expected stage definition
+stages:
+  - name: develop
+    if: (branch = develop AND type != pull_request) AND commit_message !~ /^(prepare release ([0-9\.]+))$/
+  - name: snapshot
+    if: branch = master AND type != pull_request AND commit_message !~ /^(prepare release ([0-9\.]+))$/
+  - name: release
+    if: ((tag =~ /^[0-9\.]+$/ OR $TRAVIS_TAG =~ /^[0-9\.]+$/) OR $TRAVIS_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/ OR $TRAVIS_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/)
 
-after_success:
-  # Only continue for 'develop' or 'release/*' branches
-  - if [ "$TRAVIS_BRANCH" =~ "^(develop$|feature//*)" ]; then
-    docker --debug build -t "$IMAGE_TAG" .
-    docker push "${IMAGE_BRANCH}";
-    fi
+# Build job configuration
+jobs:
+  include:
+  - stage: develop
+    name: "Build and Unit Testing the develop & PR branch"
+    install: true
+    before_deploy:
+      - docker tag "$IMAGE_TAG" "$IMAGE_BRANCH"
+    script:
+      - docker --debug build -t "$IMAGE_TAG" .
+    after_script:
+      - docker images
+    deploy:
+      provider: script
+      script: docker push "$IMAGE_BRANCH"
+      on:
+        branch: develop
 
-deploy:
-  provider: script
-  script: docker push "$IMAGE_BRANCH"
-#  on:
-#    branch: develop
+  - stage: snapshot
+    name: "Deploy Snapshot to Maven repo"
+    install: true
+    script:
+    - echo "Not Yet Implemented ..."
+
+  - stage: release
+    name: "Release the latest tag to docker registry"
+    install: true
+    script:
+    - echo "Not Yet Implemented ..."
+
+#after_success:
+#  # Only continue for 'develop' or 'release/*' branches
+#  - if [ "$TRAVIS_BRANCH" =~ "^(develop$|feature//*)" ]; then
+#    docker --debug build -t "$IMAGE_TAG" .
+#    docker push "${IMAGE_BRANCH}";
+#    fi
 
 #notifications:
 #  email: false

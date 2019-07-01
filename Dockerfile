@@ -62,7 +62,7 @@ VOLUME ["/var/lib/clamav"]
 
 COPY entrypoint.sh /usr/local/bin/
 
-RUN chmod o+x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 #Define the default entry point
 ENTRYPOINT ["entrypoint.sh"]

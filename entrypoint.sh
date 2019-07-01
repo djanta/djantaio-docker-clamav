@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ---------------------------------------------------------------------------
-# clamav-entrypoint.sh - This script will be use to provide our platform deployment client.sh architecture
+# entrypoint.sh - This script will be use to provide our platform deployment entrypoint.sh architecture
 
 # Copyright 2015, Stanislas KOFFI ASSOUTOVI <team.docker@djanta.io>
 
@@ -36,7 +36,7 @@ pidlist=`jobs -p`
 latest_exit=0
 
 # define shutdown helper
-function shutdown () {
+shutdown() {
   trap "" SIGINT
 
   for single in $pidlist; do

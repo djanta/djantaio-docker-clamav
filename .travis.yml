@@ -49,9 +49,8 @@ stages:
   - name: snapshot
     if: branch = master AND type != pull_request AND commit_message !~ /^(prepare release ([0-9\.]+))$/
   - name: release
-    if: ((tag =~ /^[0-9\.]+$/ OR $TRAVIS_TAG =~ /^[0-9\.]+$/) OR $TRAVIS_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/ OR $TRAVIS_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/)
-
-
+#    if: ((tag =~ /^[0-9\.]+$/ OR $TRAVIS_TAG =~ /^[0-9\.]+$/) OR $TRAVIS_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/ OR $TRAVIS_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/)
+    if: tag =~ /^[0-9\.]+$/
 
 # Build job configuration
 jobs:

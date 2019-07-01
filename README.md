@@ -1,6 +1,8 @@
 # docker-clamav-server
 
-[![build status badge](https://img.shields.io/travis/djanta/docker-clamav-server/master.svg)](https://travis-ci.org/djanta/docker-clamav-server/branches)
+[![build status badge](https://img.shields.io/travis/djanta/docker-clamav-server.svg)](https://travis-ci.org/djanta/docker-clamav-server/branches)
+[![pull badge](https://img.shields.io/docker/pulls/djantaio/clamav-server.svg)](https://github.com/djanta/docker-clamav-server)
+[![stars badge](https://img.shields.io/docker/stars/djantaio/clamav-server.svg)](https://github.com/djanta/docker-clamav-server)
 
 > 0.0.1-SNAPSHOT
 

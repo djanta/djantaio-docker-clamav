@@ -20,7 +20,7 @@ In order to run this container you'll need docker installed.
 
 ### Usage
 
-#### Container Parameters
+#### Start Container Parameters
 
 List the different parameters available to your container
 
@@ -31,13 +31,29 @@ docker run djantaio/clamav-server:[version] parameters
 One example per permutation 
 
 ```shell
-docker run -d djantaio/clamav-server:[version] -name clamav
+docker run -name clamav -p "3310:3310" -it djantaio/clamav-server:[version]
 ```
+
+####  Interaccting with your container
 
 Show how to get a shell started in your container too
 
 ```shell
 docker run djantaio/clamav-server:[version] bash
+```
+
+or by running docker exec
+
+```shell
+docker exec -ti [container] bash
+```
+
+#### Stop Container Parameters
+
+Show how to get a stop in your container
+
+```shell
+docker stop [container] 
 ```
 
 ## Built With
@@ -51,7 +67,7 @@ docker run djantaio/clamav-server:[version] bash
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/djanta/docker-clamav-server/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 
@@ -60,16 +76,12 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Stanislas Koffi ASSOUTOVI** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+* **Stanislas Koffi ASSOUTOVI** - *Initial work* - [Clamav](https://github.com/stanislaska)
 
 See also the list of [contributors](https://github.com/djanta/docker-clamav-server/contributors) who 
 participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/djanta/docker-clamav-server/blob/master/LICENSE) file for details.
 
-## Acknowledgments
-
-* People you want to thank
-* If you took a bunch of code from somewhere list it here

@@ -15,15 +15,25 @@ ARG DEBIAN_FRONTEND
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBIAN_VERSION jessie
 
-RUN echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-free" > /etc/apt/sources.list && \
-    echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION-updates main contrib non-free" >> /etc/apt/sources.list && \
-    echo "deb http://security.debian.org/ $DEBIAN_VERSION/updates main contrib non-free" >> /etc/apt/sources.list && \
-
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.10
+
+#=====================
+# Updates for debconf
+# Prevent message 'debconf: unable to initialize frontend: Dialog'
+# Prevent message 'debconf: delaying package configuration, since apt-utils is not installed'
+#=====================
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+RUN echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-free" > /etc/apt/sources.list \
+    #&& echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION-updates main contrib non-free" >> /etc/apt/sources.list \
+    && echo "deb http://security.debian.org/ $DEBIAN_VERSION/updates main contrib non-free" >> /etc/apt/sources.list
+
 RUN set -x \
 	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates wget locales \
-	qq clamav-daemon clamav-freshclam libclamunrar7 \
+	apt-utils \
+	#qq \
+	clamav-daemon clamav-freshclam libclamunrar7 \
 	&& localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \

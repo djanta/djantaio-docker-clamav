@@ -1,6 +1,6 @@
 # docker-clamav-server
 
-[![build status badge](https://img.shields.io/travis/djantaio/docker-clamav-server/master.svg)](https://travis-ci.org/djantaio/docker-clamav-server/branches)
+[![build status badge](https://img.shields.io/travis/djanta/docker-clamav-server/master.svg)](https://travis-ci.org/djanta/docker-clamav-server/branches)
 
 > 0.0.1-SNAPSHOT
 
@@ -34,7 +34,7 @@ One example per permutation
 docker run -name clamav -p "3310:3310" -it djantaio/clamav-server:[version]
 ```
 
-####  Interaccting with your container
+####  Interacting with your container
 
 Show how to get a shell started in your container too
 
